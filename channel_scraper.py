@@ -1,10 +1,18 @@
+from curses import delay_output
 import requests
 import json
 import time
 import math
 import os
 
-def download_channel(channelID, path, channelName, authToken, chunkLength):
+
+requestLimit = 3
+# Limit to how many requests per channel. Important because there is about
+# 2 requests per second, but a single general channel could require 10,000 requests
+
+requestWait = 0 # Wait time between every request being processed (seconds)
+
+def download_channel(authToken, channelID, path, channelName,  chunkLength):
 
     start_time = time.time()
 
@@ -12,7 +20,7 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
     request = requests.get(url = f'''https://discord.com/api/v9/channels/{channelID}/messages?limit=100''', headers= {"Authorization": authToken})
 
     # Inital paste of the content into the output file.
-    with open("chunk1.json", "w") as file:
+    with open("temp_chunk/chunk1.json", "w") as file:
         content = file.write(json.dumps(request.json(), indent=4)[:-2]+",")
 
     # print(json.dumps(request.json(), indent=4))
@@ -27,8 +35,8 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
             file.write(json.dumps(request.json(), indent=4))
 
     else:
-        i = 0
-        while request.json():
+        i = 1
+        while request.json() and i < requestLimit:
             # Counting progress
             i += 1
             print(f'''Request number: {i+2}, Messages: {(i+2)*100}, ''')
@@ -36,7 +44,7 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
             # Grab id of last message to continue the chain
             msgid = request.json()[-1]["id"]
 
-            fileName = f"""chunk{math.ceil(i/chunkLength)}.json"""
+            fileName = f"""temp_chunk/chunk{math.ceil(i/chunkLength)}.json"""
 
             # GET new batch of messages
             request = requests.get(url = f'''https://discord.com/api/v9/channels/{channelID}/messages?limit=100&before={msgid}''', headers= {"Authorization": authToken})
@@ -44,7 +52,8 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
             # Replace the json with new data
             with open(fileName, "a") as file:
                 file.write(json.dumps(request.json(), indent=4)[1:-2]+",")
-
+            
+            time.sleep(requestWait)
 
         print(f'''All data pulled, now merging chunks. Time: {round(time.time() - start_time, 2)}s''')
 
@@ -56,7 +65,7 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
 
         for i in range(math.ceil(i/chunkLength)):
             print("Currently merging Chunk number", i)
-            with open(f"""chunk{i+1}.json""", "r") as file:
+            with open(f"""temp_chunk/chunk{i+1}.json""", "r") as file:
                 content = file.read()
 
             with open(f"""{path}{channelName}.json""", "a") as file:
