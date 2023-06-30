@@ -28,7 +28,7 @@ def download_channel(channelID, path, channelName, authToken, chunkLength):
 
     else:
         i = 0
-        while request.json() and  i<4:
+        while request.json():
             # Counting progress
             i += 1
             print(f'''Request number: {i+2}, Messages: {(i+2)*100}, ''')
