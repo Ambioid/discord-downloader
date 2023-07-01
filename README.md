@@ -18,13 +18,14 @@ Selfhosted bots are against discord's terms of service, and may lead to terminat
 - [x] Improve performance (Chunk together files and merge at end)
 - [x] Output file named after all the channel.
 - [ ] Centralize config in a configuration file
-- [ ] Add guild data as well while we've got it
+- [x] Add guild data as well while we've got it
 - [ ] Better way to grab auth token
 - [x] Make it get all the channels for a server
 - [x] Make it get all servers for a user
-- [ ] Same with all DMs/friends?
+- [x] Same with all DMs/friends?
 - [ ] Option to download images
 - [ ] A secondary program to synthesize and distill the information in a more readable way
+- [ ] Just let me finish this and move on please
 
 
 Things to do before git pushing: 
