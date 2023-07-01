@@ -1,34 +1,37 @@
 import requests
 from channel_scraper import *
 
-authToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # Insert your own authorization token (DO NOT SHARE WITH OTHERS)
 
-request = requests.get(url = f'''https://discord.com/api/v9/users/@me/channels''', headers= {"Authorization": authToken})
+def download_dms():
+    with open("configuration.yaml", "r") as f: #Grab all the data from config file
+            config = yaml.safe_load(f)
 
-chunkLength = 500
+    request = requests.get(url = f'''https://discord.com/api/v9/users/@me/channels''', headers= {"Authorization": config["authToken"]})
 
-serverWait = 0 # Wait time between each server (seconds)
+    print(request.json())
+    for i in range(len(request.json())):
 
-print(request.json())
-for i in range(len(request.json())):
+        with open("configuration.yaml", "r") as f: #Grab all the data from config file
+            config = yaml.safe_load(f)
 
-    # If normal DM or group DM, give different naming scheme
-    if request.json()[i]["type"] == 1:
-        print("DM:", request.json()[i]["id"], request.json()[i]["recipients"][0]["username"])
-        name = request.json()[i]["recipients"][0]["username"]
+        # If normal DM, just make the name the filename
+        if request.json()[i]["type"] == 1:
+            print("DM:", request.json()[i]["id"], request.json()[i]["recipients"][0]["username"])
+            name = request.json()[i]["recipients"][0]["username"]
 
-    elif request.json()[i]["type"] == 3:
-        name = "Group DM: "
-        for recipient in request.json()[i]["recipients"]:
-            print(recipient["username"])
-            name += recipient["username"]+", "
-        name = name[:-2]
+        # If group DM, add the name of everyone in it 
+        elif request.json()[i]["type"] == 3:
+            name = "Group DM: "
+            for recipient in request.json()[i]["recipients"]:
+                print(recipient["username"])
+                name += recipient["username"]+", "
+            name = name[:-2]
 
-    
-    download_channel(authToken, request.json()[i]["id"], f'''json_output/!direct_messages/''', name, chunkLength)
-    
-    time.sleep(serverWait)
+        
+        download_channel(request.json()[i]["id"], f'''json_output/!direct_messages/''', name)
+        
+        time.sleep(config["channelWait"]*random.uniform(1-config["waitVariation"], 1+config["waitVariation"]))
 
-    
-print(request)
-print("User's information downloaded")
+        
+    print(request)
+    print("User's information downloaded")

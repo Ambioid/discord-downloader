@@ -1,22 +1,20 @@
 import requests
 from guild_scraper import *
 
-authToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # Insert your own authorization token (DO NOT SHARE WITH OTHERS)
 
-request = requests.get(url = f'''https://discord.com/api/v9/users/@me/guilds''', headers= {"Authorization": authToken})
+def download_all_servers():
+    with open("configuration.yaml", "r") as f: #Grab all the data from config file
+        config = yaml.safe_load(f)
 
-chunkLength = 500
+    request = requests.get(url = f'''https://discord.com/api/v9/users/@me/guilds''', headers= {"Authorization": config['authToken']})
 
-serverWait = 0 # Wait time between each server (seconds)
+    for i in range(len(request.json())):
+        print(request.json()[i]["id"], request.json()[i]["name"])
+        
+        
+        download_guild(request.json()[i]["id"])
+        time.sleep(config['serverWait']*random.uniform(1-config["waitVariation"], 1+config["waitVariation"]))
 
+        
 
-for i in range(len(request.json())):
-    print(request.json()[i]["id"], request.json()[i]["name"])
-    
-    
-    download_guild(authToken, request.json()[i]["id"], request.json()[i]["name"], chunkLength)
-    time.sleep(serverWait)
-
-    
-
-print("User's information downloaded")
+    print("User's information downloaded")
