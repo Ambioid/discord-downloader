@@ -1,20 +1,22 @@
 # Token is necessary information for it to function. Check README.md (DO NOT SHARE AUTH TOKEN)
-authToken: XXXXXXXXXXXXXX.XXXXXXXXXXXXXXXXX.XXXXXXXXXXXXXX.XXXXXXXXXXXXX
-
-# Must be filled in. Different mode will influence what information is being grabbed. 
-mode: 1
-# Grabs: 1.Entire User, 2.DMs 3.All servers, 4.Single server, 5.Single channel
+authToken: "XXXXXXXXXXXXXXXXXXXXXXXXX.XXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXX-X-XXX-XXXXXXX"
 
 # Fill in, if mode is for checking 1 specific channel/server
-channelID: XXXXX # Not necessary if mode != 5
-guildID:  XXXXX # Not necessary if mode != 4
+channelID: "XXXXXXXXXXXXXXXXXX" # Not necessary if mode != 5
+guildID:  "XXXXX" # Not necessary if mode != 4
+
+# Must be filled in. Different mode will influence what information is being grabbed. 
+mode: 2
+# Grabs: 1.Entire User, 2.DMs 3.All servers, 4.Single server, 5.Single channel/DM
 
 
 
 # Configuration & settings stuff (Does not need to be changed)
 chunkLength: 500   # How many requests worth of data in a single chunk split
 requestLength: 50  # Maximum amount of messages in 1 request (Max 100)
-requestLimit: 2    # How many requests per channel. 1 channel could need thousands of requests
+requestLimit: 1000    # How many requests per channel. 1 channel could need thousands of requests
+
+# All the wait variables are not necessary, but it'll stop you from spamming discord's servers
 requestWait: 1     # Wait time between every request being processed (in seconds)
 channelWait: 1     # Wait time between every server's data being processed (in seconds) 
 serverWait: 5      # Wait time between every server's data being processed (in seconds)
