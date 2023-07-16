@@ -20,12 +20,12 @@ elif config["mode"] == 5: #Grab entire channel
     request = requests.get(url = f'''https://discord.com/api/v9/channels/{config['channelID']}''', headers= {"Authorization": config['authToken']})
     print(request.json())
 
-    if request.json()["name"]: # If it has a name, use that, otherwise grab the DM recipient
+    if "name" in request.json(): # If it has a name, use that, otherwise grab the DM recipient
         name = request.json()["name"]
         path = "json_output/channel_download/"
     else:
         name = request.json()["recipients"][0]["username"]
-        path = "json_output/!direct_messages"
+        path = "json_output/!direct_messages/"
 
 
     download_channel(config['channelID'], path, name)
